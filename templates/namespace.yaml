@@ -1,0 +1,22 @@
+{{- if .Values.namespaces }}
+{{- range $namespace := .Values.namespaces }}
+{{ $namespaceName := printf "%s" .name }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $namespaceName | quote }}
+  {{- if $namespace.labels }}
+  labels:
+  {{- range $labelKey, $labelValue := $namespace.labels }}
+    {{ $labelKey }}: {{ $labelValue | quote }}
+  {{- end }}
+  {{- end }}
+  {{- if $namespace.annotations }}
+  annotations:
+  {{- range $annotationKey, $annotationValue := $namespace.annotations }}
+    {{ $annotationKey }}: {{ $annotationValue | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}

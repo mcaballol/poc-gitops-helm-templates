@@ -1,0 +1,61 @@
+
+# namespaces:
+#   - name: dev
+#     labels:
+#       environment: desarollo
+#       team: desarollo
+#       app: dev-my-app
+#     annotations:
+#       description: "Annotations de mi my-app ambiente dev"
+#       createdBy: "John Doe"
+#   - name: qa
+#     labels:
+#       environment: a
+#       environment1: b
+#       environment2: c
+#       environment2: victor
+#       team: qa
+#       app: qa-my-app
+#     annotations:
+#       description: "Annotations de mi my-app ambiente qa"
+#       createdBy: "victor Doe"
+#       createdCustom: "Esto es custom"
+
+#   - name: prod
+#     labels:
+#       team: produccion
+#       app: prod-my-app
+#     annotations:
+#       description: "Annotations de mi my-app ambiente prod"
+ 
+deploymentConfig:
+  - name: dc01
+    labels:
+      environment: dev
+      team: dev
+      app: app01
+    annotations:
+      description: "Annotations de mi app01 ambiente dev"
+      createdBy: "RedHat"
+    replicas: 2  
+    container:
+      ports:
+        - 80
+        - 8080
+      image: docker.io/vitokotoko20/flask:latest
+  - name: dc02
+    labels:
+      environment: dev
+      team: dev
+      app: app02
+    annotations:
+      description: "Annotations de mi app02 ambiente dev"
+      createdBy: "RedHat"
+    replicas: 1 
+    container:
+      ports:
+        - 8080
+      image: docker.io/vitokotoko20/flask:latest
+    
+
+        

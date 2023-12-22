@@ -1,0 +1,84 @@
+{{- if .Values.deploymentConfig }}
+{{- range $deploymentConfig := .Values.deploymentConfig }}
+{{ $deploymentConfigName := printf "%s" .name }}
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  {{- if $deploymentConfig.annotations }}
+  annotations:
+  {{- range $annotationKey, $annotationValue := $deploymentConfig.annotations }}
+    {{ $annotationKey }}: {{ $annotationValue | quote }}
+  {{- end }}
+  {{- end }}
+  {{- if $deploymentConfig.labels }}
+  labels:
+  {{- range $labelKey, $labelValue := $deploymentConfig.labels }}
+    {{ $labelKey }}: {{ $labelValue | quote }}
+  {{- end }}
+  {{- end }}
+  name: {{ $deploymentConfigName | quote }}
+spec:
+  replicas: {{ $deploymentConfig.replicas }}
+  selector:
+    deploymentconfig: {{ $deploymentConfigName | quote }}
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: {{ $deploymentConfigName | quote }}
+        deploymentconfig: {{ $deploymentConfigName | quote }}
+    spec:
+      containers:
+        - name: {{ $deploymentConfigName | quote }}
+          image: {{ $deploymentConfig.container.image }}
+          imagePullPolicy: Always
+          ports:
+            {{- if $deploymentConfig.container.ports }}
+            {{- range $port := $deploymentConfig.container.ports }}
+            - containerPort: {{ $port }}
+              protocol: TCP
+            {{- end }}
+            {{- end }}
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          # volumeMounts:
+          #   - mountPath: {{ .Values.volumeMounts.mountPath }}
+          #     name: {{ .Values.volumeMounts.name }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      # volumes:
+      #   - configMap:
+      #       defaultMode: {{ .Values.volumes.configMap.defaultMode }}
+      #       items:
+      #         - key: {{ .Values.volumes.configMap.items.key }}
+      #           path: {{ .Values.volumes.configMap.items.path }}
+      #       name: {{ .Values.volumes.configMap.name }}
+      #     name: {{ .Values.volumes.name }}
+  # test: false
+#   triggers:
+#     - imageChangeParams:
+#         automatic: true
+#         containerNames:
+#           - {{ .Values.name }}
+#         from:
+#           kind: ImageStreamTag
+#           name: {{ .Values.name }}:latest
+# #        lastTriggeredImage: {{ .Values.container.image }}/{{ .Values.namespace }}/{{ .Values.name }}@{{ .Values.container.imageDigest }}
+#       type: ImageChange
+#     - type: ConfigChange
+{{- end }}
+{{- end }}
