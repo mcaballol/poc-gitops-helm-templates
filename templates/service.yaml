@@ -1,0 +1,42 @@
+# templates/service.yml
+{{- $root := . -}}
+{{- if .Values.service }}
+{{- range $service := .Values.service }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  {{- if $service.annotations }}
+  annotations:
+  {{- range $annotationKey, $annotationValue := $service.annotations }}
+    {{ $annotationKey }}: {{ $annotationValue | quote }}
+  {{- end }}
+  {{- end }}
+  {{- if $service.labels }}
+  labels:
+  {{- range $labelKey, $labelValue := $service.labels }}
+    {{ $labelKey }}: {{ $labelValue | quote }}
+  {{- end }}
+  {{- end }}
+  name: {{ $service.name }}
+spec:
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    {{- if $service.ports }}
+    {{- range $port := $service.ports }}
+  - name: {{ $port }}-tcp
+    port: {{ $port }}
+    protocol: TCP
+    targetPort: {{ $port }}
+    {{- end }}
+    {{- end }}
+  selector:
+    deploymentconfig: {{ $service.name }}
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+{{- end }}
+{{- end }}

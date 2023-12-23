@@ -1,0 +1,29 @@
+# templates/imagestream.yml
+{{- $root := . -}}
+{{- if .Values.imageStream }}
+{{- range $imageStream := .Values.imageStream }}
+---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  annotations:
+    openshift.io/generated-by: OpenShiftNewApp
+  name: {{ $imageStream.name }}
+  namespace: {{ $root.Values.namespace }}
+  labels:
+    app: {{ $imageStream.name }}
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    {{- if $imageStream.tags }}
+    {{- range $tag := $imageStream.tags }}
+    - name: {{ $tag.tag }}
+      from:
+        kind: DockerImage
+        name: >-
+          image-registry.openshift-image-registry.svc:5000/{{ $root.Values.namespace }}/{{ $imageStream.name }}:{{ $tag.tag }}
+    {{- end }}
+    {{- end }}
+{{- end }}
+{{- end }}

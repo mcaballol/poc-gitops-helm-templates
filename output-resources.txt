@@ -1,0 +1,281 @@
+---
+# Source: Template Java/templates/configMap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap1
+  namespace: poc-clh
+data:
+  envVar1: "value1"
+  envVar2: "value2"
+  envVar3: "value3"
+---
+# Source: Template Java/templates/configMap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap2
+  namespace: poc-clh
+data:
+  envVar1: "value3"
+  envVar2: "value4"
+---
+# Source: Template Java/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dc01
+spec:
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: 80-tcp
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  - name: 8080-tcp
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    deploymentconfig: dc01
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+---
+# Source: Template Java/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dc02
+spec:
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: 8080-tcp
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    deploymentconfig: dc02
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+---
+# Source: Template Java/templates/configMap.yaml
+# templates/configmap.yml
+---
+# Source: Template Java/templates/deploymentConfig.yaml
+# templates/deploymentConfig.yml
+---
+# Source: Template Java/templates/imageStreams.yaml
+# templates/imagestream.yml
+---
+# Source: Template Java/templates/route.yaml
+# templates/route.yml
+# Validar si es necesario definir la route en el values.yml o cada service necesita tener una ruta? dentro de la definicion del service, puede especificarse el nombre de la ruta, y de existir ese valor, se creara la ruta
+---
+# Source: Template Java/templates/service.yaml
+# templates/service.yml
+---
+# Source: Template Java/templates/deploymentConfig.yaml
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  annotations:
+    createdBy: "RedHat"
+    description: "Annotations de mi app01 ambiente dev"
+  labels:
+    app: "app01"
+    environment: "dev"
+    team: "dev"
+  name: "dc01"
+  namespace: poc-clh
+spec:
+  replicas: 2
+  selector:
+    deploymentconfig: "dc01"
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: "dc01"
+        deploymentconfig: "dc01"
+    spec:
+      containers:
+        - name: "dc01"
+          image: docker.io/vitokotoko20/flask:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              protocol: TCP
+            - containerPort: 8080
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - "dc01"
+        from:
+          kind: ImageStreamTag
+          name: docker.io/vitokotoko20/flask:latest
+      type: ImageChange
+    - type: ConfigChange
+---
+# Source: Template Java/templates/deploymentConfig.yaml
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  annotations:
+    createdBy: "RedHat"
+    description: "Annotations de mi app02 ambiente dev"
+  labels:
+    app: "app02"
+    environment: "dev"
+    team: "dev"
+  name: "dc02"
+  namespace: poc-clh
+spec:
+  replicas: 1
+  selector:
+    deploymentconfig: "dc02"
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: "dc02"
+        deploymentconfig: "dc02"
+    spec:
+      containers:
+        - name: "dc02"
+          image: docker.io/vitokotoko20/flask:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - "dc02"
+        from:
+          kind: ImageStreamTag
+          name: docker.io/vitokotoko20/flask:latest
+      type: ImageChange
+    - type: ConfigChange
+---
+# Source: Template Java/templates/imageStreams.yaml
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  annotations:
+    openshift.io/generated-by: OpenShiftNewApp
+  name: is01
+  namespace: poc-clh
+  labels:
+    app: is01
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    - name: latest
+      from:
+        kind: DockerImage
+        name: >-
+          image-registry.openshift-image-registry.svc:5000/poc-clh/is01:latest
+---
+# Source: Template Java/templates/imageStreams.yaml
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  annotations:
+    openshift.io/generated-by: OpenShiftNewApp
+  name: is02
+  namespace: poc-clh
+  labels:
+    app: is02
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    - name: v1
+      from:
+        kind: DockerImage
+        name: >-
+          image-registry.openshift-image-registry.svc:5000/poc-clh/is02:v1
+---
+# Source: Template Java/templates/route.yaml
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    openshift.io/host.generated: "true"
+  labels:
+    app: dc01
+  name: dc01
+spec:
+  host: dc01-%!s(<nil>).apps.ocp-noprod.cclh.int
+  port:
+    targetPort: 80-tcp
+  to:
+    kind: Service
+    name: dc01
+    weight: 100
+  wildcardPolicy: None
+---
+# Source: Template Java/templates/route.yaml
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    openshift.io/host.generated: "true"
+  labels:
+    app: dc02
+  name: dc02
+spec:
+  host: dc02-%!s(<nil>).apps.ocp-noprod.cclh.int
+  port:
+    targetPort: 8080-tcp
+  to:
+    kind: Service
+    name: dc02
+    weight: 100
+  wildcardPolicy: None

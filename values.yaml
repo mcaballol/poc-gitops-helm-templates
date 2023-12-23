@@ -1,33 +1,13 @@
+##############################################################
+### Para crear de los recursos, ejecutar 'helm template .' ###
+##############################################################
 
-# namespaces:
-#   - name: dev
-#     labels:
-#       environment: desarollo
-#       team: desarollo
-#       app: dev-my-app
-#     annotations:
-#       description: "Annotations de mi my-app ambiente dev"
-#       createdBy: "John Doe"
-#   - name: qa
-#     labels:
-#       environment: a
-#       environment1: b
-#       environment2: c
-#       environment2: victor
-#       team: qa
-#       app: qa-my-app
-#     annotations:
-#       description: "Annotations de mi my-app ambiente qa"
-#       createdBy: "victor Doe"
-#       createdCustom: "Esto es custom"
 
-#   - name: prod
-#     labels:
-#       team: produccion
-#       app: prod-my-app
-#     annotations:
-#       description: "Annotations de mi my-app ambiente prod"
- 
+# Global
+namespace: poc-clh
+name: app01
+
+### DeploymentConfig ###
 deploymentConfig:
   - name: dc01
     labels:
@@ -56,6 +36,39 @@ deploymentConfig:
       ports:
         - 8080
       image: docker.io/vitokotoko20/flask:latest
-    
 
+
+### Services ###
+service:
+  - name: dc01
+    ports:
+      - 80
+      - 8080
+    #route_name:   
+  - name: dc02
+    ports:
+      - 8080
+    #route_name:  
+
+
+### ImageStreams ###
+imageStream:
+  - name: is01
+    tags:
+      - tag: latest
+
+  - name: is02
+    tags:
+      - tag: v1
         
+### ConfigMap ###
+configMaps:
+  - name: configmap1
+    envVars:
+      envVar1: "value1"
+      envVar2: "value2"
+      envVar3: "value3"
+  - name: configmap2
+    envVars:
+      envVar1: "value3"
+      envVar2: "value4"
