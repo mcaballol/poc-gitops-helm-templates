@@ -43,7 +43,8 @@ spec:
     spec:
       containers:
         - name: {{ $deploymentConfigName | quote }}
-          image: {{ $deploymentConfig.container.image }}
+          image: image-registry.openshift-image-registry.svc:5000/{{ $.Values.namespace }}/{{ $deploymentConfig.container.imageStream }}:{{ $deploymentConfig.container.imageTag }}
+
           imagePullPolicy: Always
           ports: 
             {{- if $deploymentConfig.container.ports }}
@@ -69,7 +70,7 @@ spec:
           - {{ $deploymentConfigName | quote }}
         from:
           kind: ImageStreamTag
-          name: {{ $deploymentConfig.container.image }}
+          name: {{ $deploymentConfig.container.imageStream }}:{{ $deploymentConfig.container.imageTag }}
       type: ImageChange
     - type: ConfigChange
 {{- end }}

@@ -22,7 +22,9 @@ deploymentConfig:
       ports:
         - 80
         - 8080
-      image: docker.io/vitokotoko20/flask:latest
+      imageStream: is01
+      imageTag: v1
+
   - name: dc02
     labels:
       environment: dev
@@ -35,7 +37,8 @@ deploymentConfig:
     container:
       ports:
         - 8080
-      image: docker.io/vitokotoko20/flask:latest
+      imageStream: is02
+      imageTag: v1
 
 
 ### Services ###
@@ -56,10 +59,15 @@ imageStream:
   - name: is01
     tags:
       - tag: latest
+        image: docker.io/vitokotoko20/flask:latest
+
+    
 
   - name: is02
     tags:
       - tag: v1
+        image: docker.io/vitokotoko20/flask:latest
+
         
 ### ConfigMap ###
 configMaps:
