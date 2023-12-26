@@ -22,7 +22,8 @@ spec:
       from:
         kind: DockerImage
         name: >-
-          image-registry.openshift-image-registry.svc:5000/{{ $.Values.namespace }}/{{ $imageStream.name }}:{{ $tag.tag }}
+          {{ $tag.image }}
+#          image-registry.openshift-image-registry.svc:5000/{{ $.Values.namespace }}/{{ $imageStream.name }}:{{ $tag.tag }}
     {{- end }}
     {{- end }}
 {{- end }}
