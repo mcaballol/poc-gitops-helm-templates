@@ -10,7 +10,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   source: 
     path: helm-template
-    repoURL: https://github.com/VictorFernandezArias/poc-gitops-helm-templates.git
+    repoURL: https://github.com/mcaballol/poc-gitops-helm-templates.git
     targetRevision: main
     helm:
       valueFiles:
