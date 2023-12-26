@@ -1,5 +1,5 @@
 # templates/configmap.yml
-{{- $root := . -}}
+#{{- $root := . -}}
 {{- if .Values.configMaps }}
 {{- range $configMap := .Values.configMaps }}
 ---
@@ -7,10 +7,10 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ $configMap.name }}
-  namespace: {{ $root.Values.namespace }}
+  namespace: {{ $.Values.namespace }}
 data:
 {{- range $key, $value := $configMap.envVars }}
   {{ $key }}: {{ $value | quote }}
 {{- end }}
 {{- end }}
-{{- end }}
+#{{- end }}

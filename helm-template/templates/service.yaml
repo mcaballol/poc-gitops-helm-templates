@@ -1,5 +1,5 @@
 # templates/service.yml
-{{- $root := . -}}
+#{{- $root := . -}}
 {{- if .Values.service }}
 {{- range $service := .Values.service }}
 ---
@@ -39,4 +39,4 @@ spec:
 status:
   loadBalancer: {}
 {{- end }}
-{{- end }}
+#{{- end }}

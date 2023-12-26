@@ -1,5 +1,5 @@
 # templates/deploymentConfig.yml
-{{- $root := . -}}
+#{{- $root := . -}}
 {{- if .Values.deploymentConfig }}
 {{- range $deploymentConfig := .Values.deploymentConfig }}
 {{ $deploymentConfigName := printf "%s" .name }}
@@ -20,7 +20,7 @@ metadata:
   {{- end }}
   {{- end }}
   name: {{ $deploymentConfigName | quote }}
-  namespace: {{ $root.Values.namespace }}
+  namespace: {{ $.Values.namespace }}
 spec:
   replicas: {{ $deploymentConfig.replicas }}
   selector:
@@ -73,4 +73,4 @@ spec:
       type: ImageChange
     - type: ConfigChange
 {{- end }}
-{{- end }}
+#{{- end }}

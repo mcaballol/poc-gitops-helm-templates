@@ -1,6 +1,6 @@
 # templates/route.yml
 # Validar si es necesario definir la route en el values.yml o cada service necesita tener una ruta? dentro de la definicion del service, puede especificarse el nombre de la ruta, y de existir ese valor, se creara la ruta  
-{{- $root := . -}}
+#{{- $root := . -}}
 {{- if .Values.service }}
 {{- range $service := .Values.service }}
 ---
@@ -13,7 +13,7 @@ metadata:
     app: {{ $service.name }}
   name: {{ $service.name }}
 spec:
-  host: {{ printf "%s-%s.apps.ocp-noprod.cclh.int" $service.name .Values.namespace }}
+  host: {{ printf "%s-%s.apps.ocp-noprod.cclh.int" $service.name $.Values.namespace }}
   port:
     targetPort: {{ index $service.ports 0 }}-tcp
   to:
@@ -22,4 +22,4 @@ spec:
     weight: 100
   wildcardPolicy: None
 {{- end }}
-{{- end }}
+#{{- end }}

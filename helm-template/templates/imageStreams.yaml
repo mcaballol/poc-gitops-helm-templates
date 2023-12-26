@@ -1,5 +1,5 @@
 # templates/imagestream.yml
-{{- $root := . -}}
+#{{- $root := . -}}
 {{- if .Values.imageStream }}
 {{- range $imageStream := .Values.imageStream }}
 ---
@@ -9,7 +9,7 @@ metadata:
   annotations:
     openshift.io/generated-by: OpenShiftNewApp
   name: {{ $imageStream.name }}
-  namespace: {{ $root.Values.namespace }}
+  namespace: {{ $.Values.namespace }}
   labels:
     app: {{ $imageStream.name }}
 spec:
@@ -22,8 +22,8 @@ spec:
       from:
         kind: DockerImage
         name: >-
-          image-registry.openshift-image-registry.svc:5000/{{ $root.Values.namespace }}/{{ $imageStream.name }}:{{ $tag.tag }}
+          image-registry.openshift-image-registry.svc:5000/{{ $.Values.namespace }}/{{ $imageStream.name }}:{{ $tag.tag }}
     {{- end }}
     {{- end }}
 {{- end }}
-{{- end }}
+#{{- end }}
