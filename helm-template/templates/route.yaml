@@ -13,7 +13,7 @@ metadata:
     app: {{ $service.name }}
   name: {{ $service.name }}
 spec:
-  host: {{ printf "%s-%s.apps.ocp-noprod.cclh.int" $service.name $service.namespace }}
+  host: {{ printf "%s-%s.apps.ocp-noprod.cclh.int" $service.name .Values.namespace }}
   port:
     targetPort: {{ index $service.ports 0 }}-tcp
   to:
